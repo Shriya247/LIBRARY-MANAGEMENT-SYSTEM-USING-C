@@ -1,0 +1,152 @@
+#include <stdio.h>
+#include <string.h>
+
+struct Book {
+    int id;
+    char title[100];
+    char author[100];
+};
+
+struct Book b[100];
+int n = 0;
+
+void saveBooks() {
+    FILE *fp = fopen("library.txt", "w");
+
+    for (int i = 0; i < n; i++) {
+        fprintf(fp, "%d\n%s\n%s\n",
+                b[i].id,
+                b[i].title,
+                b[i].author);
+    }
+
+    fclose(fp);
+}
+
+void addBook() {
+    int c;
+
+    printf("Enter Book ID: ");
+    scanf("%d", &b[n].id);
+
+    while ((c = getchar()) != '\n' && c != EOF);
+
+    printf("Enter Book Title: ");
+    fgets(b[n].title, 100, stdin);
+
+    for (int i = 0; b[n].title[i] != '\0'; i++) {
+        if (b[n].title[i] == '\n') {
+            b[n].title[i] = '\0';
+            break;
+        }
+    }
+
+    printf("Enter Author Name: ");
+    fgets(b[n].author, 100, stdin);
+
+    for (int i = 0; b[n].author[i] != '\0'; i++) {
+        if (b[n].author[i] == '\n') {
+            b[n].author[i] = '\0';
+            break;
+        }
+    }
+
+    n++;
+    saveBooks();
+
+    printf("Book Added!\n");
+}
+
+void showBooks() {
+    if (n == 0) {
+        printf("No books available.\n");
+        return;
+    }
+
+    for (int i = 0; i < n; i++) {
+        printf("\nID: %d\nTitle: %s\nAuthor: %s\n",
+               b[i].id,
+               b[i].title,
+               b[i].author);
+    }
+}
+
+void searchBook() {
+    int id, found = 0;
+
+    printf("Enter ID to search: ");
+    scanf("%d", &id);
+
+    for (int i = 0; i < n; i++) {
+        if (b[i].id == id) {
+            printf("\nBook Found:\nID: %d\nTitle: %s\nAuthor: %s\n",
+                   b[i].id,
+                   b[i].title,
+                   b[i].author);
+
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found)
+        printf("Book not found.\n");
+}
+
+void deleteBook() {
+    int id, pos = -1;
+
+    printf("Enter ID to delete: ");
+    scanf("%d", &id);
+
+    for (int i = 0; i < n; i++) {
+        if (b[i].id == id) {
+            pos = i;
+            break;
+        }
+    }
+
+    if (pos == -1) {
+        printf("Book not found.\n");
+        return;
+    }
+
+    for (int i = pos; i < n - 1; i++) {
+        b[i] = b[i + 1];
+    }
+
+    n--;
+    saveBooks();
+
+    printf("Book Deleted.\n");
+}
+
+int main() {
+    int ch;
+    int c;
+
+    while (1) {
+        printf("\n1.Add 2.Show 3.Search 4.Delete 5.Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &ch);
+
+        while ((c = getchar()) != '\n' && c != EOF);
+
+        if (ch == 1)
+            addBook();
+        else if (ch == 2)
+            showBooks();
+        else if (ch == 3)
+            searchBook();
+        else if (ch == 4)
+            deleteBook();
+        else if (ch == 5) {
+            printf("EXITED!\n");
+            break;
+        }
+        else
+            printf("Invalid choice!\n");
+    }
+
+    return 0;
+}
